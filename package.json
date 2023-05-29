@@ -1,0 +1,31 @@
+{
+  "name": "@symmetre-inc/eslint-plugin-custom-rule",
+  "version": "1.0.1",
+  "main": "cjs/index.js",
+  "private": true,
+  "dependencies": {
+    "@typescript-eslint/utils": "^5.57.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/parser": "^5.57.0",
+    "eslint": "^8.37.0",
+    "jsx-ast-utils": "^3.3.3",
+    "typescript": "^5.0.3",
+    "vitest": "^0.29.8"
+  },
+  "scripts": {
+    "build": "yarn tsc -b",
+    "test": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/symmetRE-Inc/eslint-rules.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/symmetRE-Inc/eslint-rules/issues"
+  },
+  "homepage": "https://github.com/symmetRE-Inc/eslint-rules#readme",
+  "description": ""
+}
