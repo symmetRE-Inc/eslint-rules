@@ -12,12 +12,26 @@ const ruleTester = new ESLintUtils.RuleTester({
 ruleTester.run('my-rule', myRule, {
   valid: [{
     code: '<Button variant="primary" />'
+  }, {
+    code: '<Button className="flex items-center" />'
   }],
   invalid: [
     {
       code: '<Button variant="secondary" />',
       output: '<Button variant="new-secondary" />',
-      errors: [{ messageId: 'messageIdForFailure' }],
+      errors: [{ messageId: 'secondaryVariantFailureId' }],
     },
+    {
+      code: '<Button className="d-flex position-relative position-absolute" />',
+      output: '<Button className="flex relative absolute" />',
+      errors: [{ messageId: 'tailwindFailureId' }],
+    },
+    {
+      code: '<Button className="d-flex text-white font-weight-400 w-100" />',
+      output: '<Button className="flex text-white font-normal w-full" />',
+      errors: [{ messageId: 'tailwindFailureId' }],
+    }
   ],
 });
+
+
