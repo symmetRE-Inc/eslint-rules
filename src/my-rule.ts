@@ -46,19 +46,35 @@ const myRule: TSESLint.RuleModule<MessageIds> = {
       // migration to tailwind
       if (propNameString === 'className'
         && Object.keys(OLD_CLASSES_TO_TAILWIND).some(k => propValue.includes(k))) {
-
+        const replaceOldClasses = (classValue: string) => Object.entries(OLD_CLASSES_TO_TAILWIND)
+          .filter(([oldClass, newClass]) => classValue.includes(oldClass) && newClass != null)
+          .reduce((acc, [oldClass, newClass]) => {
+            return acc.replace(oldClass, newClass!);
+          }, classValue);
+        const getRangeExcludeQuotes = (node: any): [number, number] => [node.range[0] + 1, node.range[1] - 1];
 
         return context.report({
           node,
           messageId: 'tailwindFailureId',
           fix(fixer) {
-            let newValue = propValue;
-            Object.entries(OLD_CLASSES_TO_TAILWIND)
-              .filter(([oldClass, newClass]) => propValue.includes(oldClass) && newClass != null)
-              .forEach(([oldClass, newClass]) => {
-                newValue = newValue.replace(oldClass, newClass);
-            });
-            return fixer.replaceTextRange(node.value!.range, `"${newValue}"`);
+            if (node.value!.type === 'JSXExpressionContainer') {
+              const { expression } = node.value! as any;
+              return expression.arguments
+                // @ts-ignore
+                .filter(arg => arg.type === 'Literal' || arg.type === 'TemplateLiteral')
+                // @ts-ignore
+                .map((arg) => {
+                  return fixer.replaceTextRange(
+                    getRangeExcludeQuotes(arg),
+                    replaceOldClasses(arg.value)
+                  );
+
+              })
+            }
+
+            return fixer.replaceTextRange(
+              getRangeExcludeQuotes(node.value!),
+              replaceOldClasses(propValue));
           }
         });
       }

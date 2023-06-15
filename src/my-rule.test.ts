@@ -27,10 +27,24 @@ ruleTester.run('my-rule', myRule, {
       errors: [{ messageId: 'tailwindFailureId' }],
     },
     {
-      code: '<Button className="d-flex text-white font-weight-400 w-100" />',
-      output: '<Button className="flex text-white font-normal w-full" />',
+      code: `<Button className={cx('d-flex position-relative', 'position-absolute')} />`,
+      output: `<Button className={cx('flex relative', 'absolute')} />`,
       errors: [{ messageId: 'tailwindFailureId' }],
-    }
+    },
+    {
+      code: `<Button className={cx('d-flex position-relative', {
+        'position-absolute': true
+      })} />`,
+      output: `<Button className={cx('flex relative', {
+        'position-absolute': true
+      })} />`,
+      errors: [{ messageId: 'tailwindFailureId' }],
+    },
+    {
+      code: '<div className="d-flex text-white font-weight-400 w-100" />',
+      output: '<div className="flex text-white font-normal w-full" />',
+      errors: [{ messageId: 'tailwindFailureId' }],
+    },
   ],
 });
 
