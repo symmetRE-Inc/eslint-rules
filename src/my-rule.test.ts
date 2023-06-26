@@ -9,6 +9,7 @@ const ruleTester = new ESLintUtils.RuleTester({
   parserOptions: { ecmaFeatures: { jsx: true } }
 });
 
+
 ruleTester.run('my-rule', myRule, {
   valid: [{
     code: '<Button variant="primary" />'
@@ -39,6 +40,15 @@ ruleTester.run('my-rule', myRule, {
         'position-absolute': true
       })} />`,
       errors: [{ messageId: 'tailwindFailureId' }],
+    },
+    {
+      code: `<Button 
+        className={\`d-flex justify-content-between pay-app-summary__row \${x % 2 && 'pay-app-summary__row_dark'}\`}
+      />`,
+      output: `<Button 
+        className={\`d-flex justify-content-between pay-app-summary__row \${x % 2 && 'pay-app-summary__row_dark'}\`}
+      />`,
+      errors: [{messageId: 'tailwindFailureId'}],
     },
     {
       code: '<div className="d-flex text-white font-weight-400 w-100" />',

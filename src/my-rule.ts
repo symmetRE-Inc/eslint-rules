@@ -51,13 +51,17 @@ const myRule: TSESLint.RuleModule<MessageIds> = {
           .reduce((acc, [oldClass, newClass]) => {
             return acc.replace(oldClass, newClass!);
           }, classValue);
-        const getRangeExcludeQuotes = (node: any): [number, number] => [node.range[0] + 1, node.range[1] - 1];
+        const getRangeExcludeQuotes = (node: any): [number, number] => {
+          return [node.range[0] + 1, node.range[1] - 1];
+        }
 
         return context.report({
           node,
           messageId: 'tailwindFailureId',
           fix(fixer) {
-            if (node.value!.type === 'JSXExpressionContainer') {
+            if (node.value!.type === 'JSXExpressionContainer'
+              && node.value!.expression.type === 'CallExpression'
+            ) {
               const { expression } = node.value! as any;
               return expression.arguments
                 // @ts-ignore
@@ -70,6 +74,11 @@ const myRule: TSESLint.RuleModule<MessageIds> = {
                   );
 
               })
+            }
+
+            const { expression } = node.value! as any;
+            if (expression != null && expression.type === 'TemplateLiteral') {
+              return null;
             }
 
             return fixer.replaceTextRange(
