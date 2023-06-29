@@ -25,9 +25,12 @@ const myRule = createRule<[],MessageIds>({
   },
   create: (context) => ({
     JSXAttribute: (node) => {
+      if (node.value == null) {
+        return;
+      }
       // 1. Grab the TypeScript program from parser services
       const parserServices = ESLintUtils.getParserServices(context);
-      const originalNode = parserServices.esTreeNodeToTSNodeMap.get(node.value!)
+      const originalNode = parserServices.esTreeNodeToTSNodeMap.get(node.value)
 
       const { parent } = node;
       // Extract a component name when using a "namespace", e.g. `<AntdLayout.Content />`.
