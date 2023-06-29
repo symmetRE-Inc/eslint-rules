@@ -2,11 +2,14 @@ import { ESLintUtils } from '@typescript-eslint/utils';
 
 import myRule from './my-rule';
 
-const parserResolver = require.resolve('@typescript-eslint/parser');
-
 const ruleTester = new ESLintUtils.RuleTester({
-  parser: parserResolver as any, // yarn 2+ shenanigans
-  parserOptions: { ecmaFeatures: { jsx: true } }
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: '../tsconfig.json',
+    tsconfigRootDir: __dirname,
+    ecmaFeatures: { jsx: true }
+  },
+
 });
 
 

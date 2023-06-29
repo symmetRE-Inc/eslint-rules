@@ -1,15 +1,18 @@
-import { TSESLint } from '@typescript-eslint/utils';
+import { ESLintUtils } from '@typescript-eslint/utils';
+import * as ts from 'typescript';
 // @ts-ignore
-import { elementType, getPropValue, propName } from 'jsx-ast-utils';
 import { OLD_CLASSES_TO_TAILWIND } from './config';
+import { elementType, } from "./utils/jsx-ast";
+import { getRangeExcludeQuotes } from "./utils";
 
 type MessageIds = 'secondaryVariantFailureId' | 'tailwindFailureId';
-
 const PROP_TO_VALIDATE = 'variant';
 const PROP_VALUE = 'secondary';
 const PROP_FIX = 'new-secondary';
 
-const myRule: TSESLint.RuleModule<MessageIds> = {
+const createRule = ESLintUtils.RuleCreator.withoutDocs;
+
+const myRule = createRule<[],MessageIds>({
   defaultOptions: [],
   meta: {
     type: 'suggestion',
@@ -22,23 +25,26 @@ const myRule: TSESLint.RuleModule<MessageIds> = {
   },
   create: (context) => ({
     JSXAttribute: (node) => {
+      // 1. Grab the TypeScript program from parser services
+      const parserServices = ESLintUtils.getParserServices(context);
+      const originalNode = parserServices.esTreeNodeToTSNodeMap.get(node.value!)
+
       const { parent } = node;
       // Extract a component name when using a "namespace", e.g. `<AntdLayout.Content />`.
       const tag = elementType(parent);
 
 
-      const propValue = getPropValue(node);
-      const propNameString = propName(node);
-
+      const propValue = ts.createPrinter().printNode(ts.EmitHint.Unspecified, originalNode, originalNode.getSourceFile())
+      const propNameString = node.name.name;
       // migration to new-secondary
       if (propNameString === PROP_TO_VALIDATE
-        && propValue === PROP_VALUE
+        && (node.value! as any).value === PROP_VALUE
         && tag === 'Button') {
         return context.report({
           node,
           messageId: 'secondaryVariantFailureId',
           fix(fixer) {
-            return fixer.replaceTextRange(node.value!.range, `"${PROP_FIX}"`);
+            return fixer.replaceTextRange(getRangeExcludeQuotes(node.value!), `${PROP_FIX}`);
           }
         });
       }
@@ -51,9 +57,6 @@ const myRule: TSESLint.RuleModule<MessageIds> = {
           .reduce((acc, [oldClass, newClass]) => {
             return acc.replace(oldClass, newClass!);
           }, classValue);
-        const getRangeExcludeQuotes = (node: any): [number, number] => {
-          return [node.range[0] + 1, node.range[1] - 1];
-        }
 
         return context.report({
           node,
@@ -82,13 +85,13 @@ const myRule: TSESLint.RuleModule<MessageIds> = {
             }
 
             return fixer.replaceTextRange(
-              getRangeExcludeQuotes(node.value!),
+              node.value!.range,
               replaceOldClasses(propValue));
           }
         });
       }
     }
   }),
-};
+});
 
 export default myRule;
