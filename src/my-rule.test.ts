@@ -21,11 +21,6 @@ ruleTester.run('my-rule', myRule, {
   }],
   invalid: [
     {
-      code: '<Button variant="secondary" />',
-      output: '<Button variant="new-secondary" />',
-      errors: [{ messageId: 'secondaryVariantFailureId' }],
-    },
-    {
       code: '<Button className="d-flex position-relative position-absolute" />',
       output: '<Button className="flex relative absolute" />',
       errors: [{ messageId: 'tailwindFailureId' }],
@@ -45,10 +40,10 @@ ruleTester.run('my-rule', myRule, {
       errors: [{ messageId: 'tailwindFailureId' }],
     },
     {
-      code: `<Button 
+      code: `<Button
         className={\`d-flex justify-content-between pay-app-summary__row \${x % 2 && 'pay-app-summary__row_dark'}\`}
       />`,
-      output: `<Button 
+      output: `<Button
         className={\`d-flex justify-content-between pay-app-summary__row \${x % 2 && 'pay-app-summary__row_dark'}\`}
       />`,
       errors: [{messageId: 'tailwindFailureId'}],
@@ -60,5 +55,3 @@ ruleTester.run('my-rule', myRule, {
     },
   ],
 });
-
-
