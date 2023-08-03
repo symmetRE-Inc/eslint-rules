@@ -2,13 +2,9 @@ import { ESLintUtils } from '@typescript-eslint/utils';
 import * as ts from 'typescript';
 // @ts-ignore
 import { OLD_CLASSES_TO_TAILWIND } from './config';
-import { elementType, } from "./utils/jsx-ast";
 import { getRangeExcludeQuotes } from "./utils";
 
 type MessageIds = 'secondaryVariantFailureId' | 'tailwindFailureId';
-const PROP_TO_VALIDATE = 'variant';
-const PROP_VALUE = 'secondary';
-const PROP_FIX = 'new-secondary';
 
 const createRule = ESLintUtils.RuleCreator.withoutDocs;
 
@@ -32,25 +28,11 @@ const myRule = createRule<[],MessageIds>({
       const parserServices = ESLintUtils.getParserServices(context);
       const originalNode = parserServices.esTreeNodeToTSNodeMap.get(node.value)
 
-      const { parent } = node;
       // Extract a component name when using a "namespace", e.g. `<AntdLayout.Content />`.
-      const tag = elementType(parent);
 
 
       const propValue = ts.createPrinter().printNode(ts.EmitHint.Unspecified, originalNode, originalNode.getSourceFile())
       const propNameString = node.name.name;
-      // migration to new-secondary
-      if (propNameString === PROP_TO_VALIDATE
-        && (node.value! as any).value === PROP_VALUE
-        && tag === 'Button') {
-        return context.report({
-          node,
-          messageId: 'secondaryVariantFailureId',
-          fix(fixer) {
-            return fixer.replaceTextRange(getRangeExcludeQuotes(node.value!), `${PROP_FIX}`);
-          }
-        });
-      }
 
       // migration to tailwind
       if (propNameString === 'className'
