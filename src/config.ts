@@ -34,11 +34,9 @@ export const OLD_CLASSES_TO_TAILWIND = {
   'w-25': 'w-1/4',
   'w-50': 'w-1/2',
   'w-75': 'w-3/4',
-  'w-auto': 'w-auto',
   'h-25': 'h-1/4',
   'h-50': 'h-1/2',
   'h-75': 'h-3/4',
-  'h-auto': 'h-auto',
   'mw-100': 'max-w-full',
   'mh-100': 'max-h-full',
 
@@ -224,8 +222,6 @@ export const OLD_CLASSES_TO_TAILWIND = {
   'line-height-1-5rem': 'leading-6',
   'line-height-21px': 'leading-[21px]',
   'lh-1rem': 'leading-4',
-
-  'bottom-0': 'b-0',
 
   'bottom-n-s': '-b-tw-2',
   'right-n-xs': '-r-tw-1',
